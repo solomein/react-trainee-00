@@ -1,1 +1,11 @@
-# react-trainee-00
+```
+npm install
+npm run start
+```
+
+или
+
+```
+yarn install
+yarn run start
+```
