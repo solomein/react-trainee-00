@@ -5,16 +5,6 @@ const settings = require('./settings')
 const Dotenv = require('dotenv-webpack')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
-function getFilesLoaders(limit, path = '') {
-  return {
-    loader: 'url-loader',
-    options: {
-      limit,
-      name: `${path}[name].[ext]?[hash:base64:6]`
-    }
-  }
-}
-
 module.exports = function ({ outputPath, envFile, isProduction }) {
   let config = {
     mode: isProduction ? 'production' : 'development',
@@ -24,9 +14,7 @@ module.exports = function ({ outputPath, envFile, isProduction }) {
     devtool: '',
     output: {
       path: outputPath,
-      filename: '[name].bundle.js?[hash:8]',
-      libraryTarget: 'umd',
-      umdNamedDefine: true
+      filename: '[name].bundle.js?[hash:8]'
     },
     resolve: {
       modules: [settings.paths.contentBase, 'node_modules'],
@@ -42,9 +30,7 @@ module.exports = function ({ outputPath, envFile, isProduction }) {
             options: {
               presets: ['@babel/preset-env', '@babel/preset-react'],
               plugins: [
-                'babel-plugin-styled-components',
-                '@babel/plugin-proposal-class-properties',
-                '@babel/plugin-proposal-object-rest-spread'
+                'babel-plugin-styled-components'
               ]
             }
           }
@@ -58,6 +44,7 @@ module.exports = function ({ outputPath, envFile, isProduction }) {
               options: {
                 importLoaders: 1,
                 modules: {
+                  auto: true,
                   localIdentName: '[name]__[local]___[hash:base64:5]'
                 }
               }
@@ -66,24 +53,13 @@ module.exports = function ({ outputPath, envFile, isProduction }) {
         },
         {
           test: /\.png$/,
-          use: getFilesLoaders(100000),
-          exclude: /(static)/
-        },
-        {
-          test: /\.(png)$/,
-          use: getFilesLoaders(1, 'static/'),
-          include: /(static)/
+          type: 'asset/inline'
         }
       ]
     },
     optimization: {
-      mangleWasmImports: true,
-      mergeDuplicateChunks: true,
       minimize: true,
-      nodeEnv: 'production',
-      splitChunks: {
-        name: false
-      }
+      nodeEnv: 'production'
     },
     plugins: [
       new Dotenv({
@@ -135,8 +111,6 @@ module.exports = function ({ outputPath, envFile, isProduction }) {
       }
     }
     config.optimization = {
-      mangleWasmImports: true,
-      mergeDuplicateChunks: true,
       minimize: false,
       nodeEnv: 'development'
     }

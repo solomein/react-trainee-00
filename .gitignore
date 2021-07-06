@@ -95,3 +95,8 @@ Temporary Items
 !.vscode/extensions.json
 
 node_modules/
+
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+.pnp.*

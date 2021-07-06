@@ -8,4 +8,8 @@ const Root = styled.div`
   margin: auto;
 `
 
+export const Group = styled.div`
+  margin: 0 0 20px;
+`
+
 export default Root

@@ -1,74 +1,51 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import * as S from './styled-field'
 
-export default class Input extends React.Component {
-  state = {
-    value: this.props.value || '',
-    focused: false
-  }
+export default function Input(props) {
+  const [value, setValue] = useState(props.value || '')
+  const [focus, setFocus] = useState(false)
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.value !== this.props.value) {
-      this.setState({
-        value: this.props.value || ''
-      })
+  useEffect(() => {
+    setValue(props.value)
+  }, [props.value])
+
+  function renderLabel() {
+    if (props.label) {
+      return <S.Label>{props.label}</S.Label>
     }
   }
 
-  render() {
-    return (
-      <div style={this.props.style} className={this.props.className}>
-        {this.renderLabel()}
-        <S.ControlWrapper focused={this.state.focused}>{this.renderControl()}</S.ControlWrapper>
-      </div>
-    )
-  }
-
-  renderLabel() {
-    if (this.props.label?.length) {
-      return <S.Label>{this.props.label}</S.Label>
-    }
-  }
-
-  renderControl() {
-    return (
-      <S.Control
-        as="input"
-        value={this.state.value}
-        placeholder={this.props.placeholder}
-        onChange={this.handleChange}
-        onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-        autoFocus={this.props.autoFocus}
-        type={this.props.type}
-      />
-    )
-  }
-
-  handleChange = (ev) => {
+  function handleChange(ev) {
     const value = ev.currentTarget.value
-
-    this.setState({ value })
-    this.props.onChange(value, ev)
+    setValue(value)
+    props.onChange && props.onChange(value, ev)
   }
 
-  handleFocus = (ev) => {
-    this.setState({
-      focused: true
-    })
-
-    if (this.props.onFocus) {
-      this.props.onFocus(this.props.value, ev)
-    }
+  function handleFocus(ev) {
+    setFocus(true)
+    props.onFocus && props.onFocus(value, ev)
   }
 
-  handleBlur = (ev) => {
-    this.setState({
-      focused: false
-    })
-
-    if (this.props.onBlur) {
-      this.props.onBlur(this.props.value, ev)
-    }
+  function handleBlur(ev) {
+    setFocus(false)
+    props.onBlur && props.onBlur(value, ev)
   }
+
+  return (
+    <div style={props.style} className={props.className}>
+      {renderLabel()}
+      <S.ControlWrapper focused={focus}>
+        <S.Control
+          as="input"
+          value={value}
+          placeholder={props.placeholder}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          autoFocus={props.autoFocus}
+          type={props.type}
+        />
+      </S.ControlWrapper>
+    </div>
+  )
 }

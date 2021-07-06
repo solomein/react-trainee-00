@@ -1,32 +1,33 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import * as S from './styled-field'
 
-export default class Select extends React.Component {
-  render() {
-    return (
-      <div style={this.props.style} className={this.props.className}>
-        {this.renderLabel()}
-        <S.ControlWrapper>{this.renderControl()}</S.ControlWrapper>
-      </div>
-    )
-  }
+export default function Select(props) {
+  const [value, setValue] = useState(props.value || '')
 
-  renderLabel() {
-    if (this.props.label?.length) {
-      return <S.Label>{this.props.label}</S.Label>
+  useEffect(() => {
+    setValue(props.value)
+  }, [props.value])
+
+  function renderLabel() {
+    if (props.label) {
+      return <S.Label>{props.label}</S.Label>
     }
   }
 
-  renderControl() {
-    return (
-      <S.Control as="select" value={this.props.value} onChange={this.handleChange}>
-        {this.props.children}
-      </S.Control>
-    )
+  function handleChange(ev) {
+    const value = ev.currentTarget.value
+    setValue(value)
+    props.onChange && props.onChange(value, ev)
   }
 
-  handleChange = (ev) => {
-    const value = ev.currentTarget.value
-    this.props.onChange(value, ev)
-  }
+  return (
+    <div style={props.style} className={props.className}>
+      {renderLabel()}
+      <S.ControlWrapper focused={focus}>
+        <S.Control as="select" value={value} onChange={handleChange}>
+          {props.children}
+        </S.Control>
+      </S.ControlWrapper>
+    </div>
+  )
 }
